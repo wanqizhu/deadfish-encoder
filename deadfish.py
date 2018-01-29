@@ -1,49 +1,57 @@
-import math
-shortest_path = {(i, i): 'o' for i in range(256)}
+class Node():
+    def __init__(self, num):
+        self.num = num
+        self.edges = []
+        self.visited = False
 
-SEARCHING = True
-def DP(start, target, depth=0):
-    """ finds shortest path to change accumulator from start to target """
-    global SEARCHING
-    if depth == 0:
-        SEARCHING = True
+nodes = [Node(i) for i in range(256)]
 
-    if start in [-1, 256]:
-        start = 0
+for i in range(1, 16):
+    nodes[i].edges.append((nodes[i-1], 'd'))
+    nodes[i].edges.append((nodes[i+1], 'i'))
+    nodes[i].edges.append((nodes[i**2], 's'))
 
-    if (start, target) in shortest_path:
-        SEARCHING = False
-        return shortest_path[(start, target)]
+for i in range(16, 255):
+    nodes[i].edges.append((nodes[i-1], 'd'))
+    nodes[i].edges.append((nodes[i+1], 'i'))
 
-    if not SEARCHING:
-        return 'WAYTOOLONGGG' + 'g'*256
+nodes[0].edges.append((nodes[0], 'd'))
+nodes[0].edges.append((nodes[1], 'i'))
+nodes[255].edges.append((nodes[255], 'd'))
+nodes[255].edges.append((nodes[0], 'i'))
+nodes[16].edges.append((nodes[0], 's'))
 
-    ans1 = 'i' + DP(start+1, target, depth+1)
-    ans2 = 'd' + DP(start-1, target, depth+1)
-    
-    ans = ans1 if len(ans1) < len(ans2) else ans2
+DP = {}
 
-    if start < 17:
-        ans3 = 's' + DP(start**2, target, depth+1)
-        ans = ans if len(ans) < len(ans3) else ans3
-   
-    shortest_path[(start, target)] = ans
-    return ans
+def BFS(nodes, s, t):
+    if (s, t) in DP:
+        return DP[(s, t)] + 'o'
+
+    for n in nodes:
+        n.visited = False
+
+    queue = [(nodes[s], '')]
+    while queue:
+        v, path = queue.pop(0)
+        v.visited = True
+        if v.num == t:
+            DP[(s, t)] = path
+            return path + 'o'
+        
+        for (node, c) in v.edges:
+            if not node.visited:
+                queue.append((node, path+c))
+                DP[(s, node.num)] = path+c
+
+# BFS(nodes[13], nodes[127])
 
 
-# print(DP(107, 95))
-# print(shortest_path)
-# print(DP(187, 0))
-
-
-
-
-def encode(s, debug=False):
+def encode(s, start=0):
     """ Encodes input string s into deadfish """
-    targets = [0] + [ord(c) for c in s]
+    targets = [start] + [ord(c) for c in s]
     out = ""
     for i in range(len(s)):
-        out += DP(targets[i], targets[i+1])
+        out += BFS(nodes, targets[i], targets[i+1])
 
     return out
 
@@ -66,7 +74,5 @@ def decode(s, accumulator=0):
 
     return out, accumulator
 
-c = encode("treeCTF{don't_eat_dead_fish_for_dinner}")
-print(c, decode(c))
-# debug
-# print([c for c in shortest_path if len(shortest_path[c]) > 256])
+text = encode("Hello, world!")
+print(text, decode(text))
