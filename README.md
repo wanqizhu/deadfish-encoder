@@ -3,11 +3,11 @@ Python Encoder and Decoder for Deadfish
 
 # Overview
 
-Deadfish is a joke programming language.  According to the [esoteric programming language wiki](http://www.esolangs.org), a joke programming language is one that
+[Deadfish](http://esolangs.org/wiki/Deadfish) is a joke programming language.  According to the [esoteric programming language wiki](http://www.esolangs.org), a joke programming language is one that
 
 >is not of any interest except for potential humor value. Generally speaking, it is completely unusable for programming even in theory
 
-One such joke language is Deadfish, which got its name from
+One such joke language is [Deadfish](http://esolangs.org/wiki/Deadfish), which got its name from
 
 >Deadfish was originally going to be called fishheads as programming in this language is like eating raw fish heads. However, due to the limiting features of the language, programming in this language became like eating (and having to smell) dead, rotting fish heads, an experience not often generally considered pleasurable.
 
@@ -34,5 +34,16 @@ If the accumulator becomes -1 or 256, it is reset to zero.
 There are an infinite number of ways to generate any given character. However, for efficiency, we can represent each of 256 possible accumulator states (with reset) as a vertex on a graph, and then edges denoting the various operations.
 
 Note that it doesn't make sense to go beyond 256 by for example squaring 20 -- in order to generate anything useful, we need to decrement back to 256, which would take hundreds of operations. With this insight in mind and with the help of Dynamic Programming, we can simply run BFS on our generated graph, giving us a fast and efficient way to encode any string into Deadfish.
+
+# Example
+
+```python
+>>> encode("Hello, world!")
+
+iiisdsiiiiiiiioiiiiiiiiiiiiiiiiiiiiiiiiiiiiioiiiiiiiooiiioddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddddddddddddddoddddddddddddoddddddddddddddddddd
+ddsddoddddddddoiiioddddddoddddddddodddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddo
+```
 
  -- readme adapted from [TryitOnline/deadfish~](https://github.com/TryItOnline/deadfish-)
